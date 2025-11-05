@@ -221,3 +221,62 @@ FROM Students;
 SELECT DeptID, COUNT(*) AS TotalStudents
 FROM Students
 GROUP BY DeptID;
+
+
+# Subqueries in SQL
+
+A **subquery** is a query inside another query.
+It is used when one query depends on the result of another.
+
+Syntax:
+SELECT columns
+FROM table
+WHERE column (operator) (subquery);
+
+# Views in SQL
+
+A **View** is a **virtual table** based on a query.
+It does **not store data**, it displays data from underlying tables.
+
+| Purpose                      | Explanation                         |
+| ---------------------------- | ----------------------------------- |
+| **Simplify complex queries** | Avoid rewriting big joins           |
+| **Security**                 | Show only required columns to users |
+| **Reusability**              | Use view in multiple queries        |
+| **Abstraction**              | Hide database structure changes     |
+
+Subquery → Query inside a query
+View → Saved query treated like a table
+
+View = stored query
+Materialized View = stored result
+
+
+# Indexing in SQL
+
+An **index** is a data-structure that helps the database **find rows faster**, like an index in a book.
+
+Without index → DB scans the entire table (slow).  
+With index → DB jumps directly to matching rows (fast).
+
+
+# Indexing in SQL
+
+An **index** is a data-structure that helps the database **find rows faster**, like an index in a book.
+
+Without index → DB scans the entire table (slow).  
+With index → DB jumps directly to matching rows (fast).
+
+How Index Works (Simple Explanation)
+
+Think of a table like a book:
+
+| Type       | What you do                                          |
+| ---------- | ---------------------------------------------------- |
+| No Index   | Flip all pages to find a word                        |
+| With Index | Use the index page at back → go directly to the page |
+
+Index = Fast search
+Primary Key → Index auto created
+Use index on WHERE, JOIN, ORDER BY columns
+Avoid index on frequently changing or duplicate-heavy columns

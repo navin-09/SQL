@@ -176,3 +176,48 @@ GROUP BY
 HAVING
 ORDER BY
 LIMIT;
+
+
+# JOINS in SQL
+
+Joins are used to combine rows from **two tables** based on a related column (usually a **foreign key**).
+
+INNER JOIN → Only matches
+LEFT JOIN  → All from left + matches
+RIGHT JOIN → All from right + matches
+FULL JOIN  → Everything
+
+# Aggregate Functions in SQL
+
+Aggregate functions perform calculations on **multiple rows** and return **a single result**.
+Commonly used with GROUP BY.
+
+COUNT → how many
+SUM   → total
+AVG   → average
+MIN   → smallest value
+MAX   → largest value
+
+WHERE → filters rows
+HAVING → filters groups
+
+
+SELECT COUNT(*) 
+FROM Students
+WHERE DeptID = 101;
+
+SELECT SUM(Salary) AS TotalSalary
+FROM Employees;
+
+SELECT AVG(Age) AS AverageAge
+FROM Students;
+
+SELECT MIN(Age) AS Youngest
+FROM Students;
+
+SELECT MAX(Age) AS Oldest
+FROM Students;
+
+SELECT DeptID, COUNT(*) AS TotalStudents
+FROM Students
+GROUP BY DeptID;

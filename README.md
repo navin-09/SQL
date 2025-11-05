@@ -280,3 +280,187 @@ Index = Fast search
 Primary Key → Index auto created
 Use index on WHERE, JOIN, ORDER BY columns
 Avoid index on frequently changing or duplicate-heavy columns
+
+
+# Transactions in SQL
+
+A **transaction** is a group of one or more SQL statements that are treated as a **single unit**.
+Either **all** statements succeed (commit) or **none** are applied (rollback).
+
+# ACID Properties
+Transactions follow ACID:
+
+| Property        | Meaning                       | Simple Explanation                       |
+| --------------- | ----------------------------- | ---------------------------------------- |
+| **A**tomicity   | All or nothing                | Money deducted but not added? → Rollback |
+| **C**onsistency | Data must remain valid        | No breaking rules or constraints         |
+| **I**solation   | Transactions don’t interfere  | Parallel updates don’t clash             |
+| **D**urability  | Saved changes survive crashes | Once committed → permanent               |
+
+# Basic Transaction Commands (TCL)
+
+| Command                       | Meaning                     |
+| ----------------------------- | --------------------------- |
+| `BEGIN` / `START TRANSACTION` | Start transaction           |
+| `COMMIT`                      | Save changes permanently    |
+| `ROLLBACK`                    | Undo changes                |
+| `SAVEPOINT`                   | Mark a point to rollback to |
+| `SET TRANSACTION`             | Set isolation level         |
+
+# Transaction Isolation Levels in SQL
+
+Isolation levels control **how much one transaction is allowed to see the effects of another**.
+Higher isolation = safer data, but slower performance.
+
+| Problem                 | Meaning                                                  | Example                             |
+| ----------------------- | -------------------------------------------------------- | ----------------------------------- |
+| **Dirty Read**          | Read data that is not committed                          | See a temporary balance change      |
+| **Non-Repeatable Read** | Same query returns different results in same transaction | Someone updates row in between      |
+| **Phantom Read**        | New rows appear in repeated queries                      | Someone inserts new rows in between |
+
+| Level              | Dirty Read | Non-Repeatable Read | Phantom Read |
+|-------------------|-----------|----------------------|--------------|
+| READ UNCOMMITTED  | ✅ Allowed | ✅ Allowed           | ✅ Allowed   |
+| READ COMMITTED    | ❌ No     | ✅ Allowed           | ✅ Allowed   |
+| REPEATABLE READ    | ❌ No     | ❌ No               | ✅ Allowed   |
+| SERIALIZABLE       | ❌ No     | ❌ No               | ❌ No        |
+
+# Deadlocks in SQL
+
+A **deadlock** occurs when two transactions are **waiting on each other** to release locks.
+Because both are waiting, **neither can continue**, so the database stops one of them.
+
+Deadlock = Transactions waiting on each other → both stuck
+Database detects and rolls back one
+Prevent by: 
+- Lock in same order
+- Keep transactions short
+- Use indexing
+
+# Locks in SQL
+
+Locks control **how multiple transactions read/write the same data**.
+They prevent conflicts and keep data consistent.
+
+| Lock Type         | Operation                | Others Can Read? | Others Can Write? |
+| ----------------- | ------------------------ | ---------------- | ----------------- |
+| **Shared (S)**    | SELECT                   | ✅ Yes            | ❌ No              |
+| **Exclusive (X)** | UPDATE / DELETE / INSERT | ❌ No             | ❌ No              |
+
+Shared Lock = Many readers, no writers
+Exclusive Lock = Only one writer, no one else allowed
+
+# NF(Normal Form) Normalization in SQL 
+
+Normalization is the process of organizing data in a database to:
+- Reduce redundancy (duplicate data)
+- Improve data consistency
+- Make updates/inserts/deletes efficient
+
+<!-- Unnormalized Table Example -->
+<!-- Problem: Multiple courses stored in one column → bad structure. -->
+
+Students
+------------------------------------------------------
+StudentID | Name  | Courses
+1         | Ravi  | CSE, ECE
+2         | John  | CSE
+
+1NF (First Normal Form)
+Rule:
+    No repeating groups
+    Each cell must contain one value
+    Each row must be unique
+
+Students
+---------------------------
+StudentID | Name  | Course
+1         | Ravi  | CSE
+1         | Ravi  | ECE
+2         | John  | CSE
+
+2NF (Second Normal Form)
+Rule:
+    Table must be in 1NF
+    No partial dependency
+    (No attribute should depend on part of a composite primary key)
+
+Enrollments
+------------------------------------------
+StudentID + CourseID → Marks, StudentName
+<!-- StudentName depends only on StudentID, not CourseID → partial dependency. -->
+
+
+<!-- Fix (Split into two tables): -->
+Students
+-------------------------
+StudentID | Name
+
+Enrollments
+-------------------------------
+StudentID | CourseID | Marks
+
+<!-- 3NF (Third Normal Form) -->
+Rule:
+    Table must be in 2NF
+    No transitive dependency
+    (Non-key attributes shouldn’t depend on other non-key attributes)
+
+Students
+-------------------------------------------------
+StudentID (PK) | Name | DeptID | DeptName
+
+DeptName depends on DeptID, not StudentID → transitive dependency.
+
+Students
+---------------------------
+StudentID | Name | DeptID
+
+Departments
+---------------------------
+DeptID | DeptName
+✅ Now each table stores only relevant data.
+
+| Normal Form | Condition                | Fixes                                                 |
+| ----------- | ------------------------ | ----------------------------------------------------- |
+| **1NF**     | No multi-valued columns  | Remove repeating values → separate rows               |
+| **2NF**     | No partial dependency    | Remove attributes based on only part of composite key |
+| **3NF**     | No transitive dependency | Move attributes that depend on non-key columns        |
+
+1NF → One value per cell
+2NF → Fully dependent on the whole key
+3NF → Nothing depends on non-key attributes
+
+
+
+# 1) Set Operations (UNION, UNION ALL, INTERSECT, EXCEPT)
+
+Used to combine results from two SELECT queries.
+Both queries must have **same number of columns** and **same data types**.
+
+# 2) Stored Procedures and Functions
+
+| Feature         | Procedure         | Function                   |
+| --------------- | ----------------- | -------------------------- |
+| Returns         | 0 or many results | Always returns **1 value** |
+| Used in         | EXEC/CALL         | SELECT queries             |
+| Can modify data | ✅ Yes             | ❌ No (generally)           |
+
+# 3) Triggers
+A trigger automatically runs when INSERT, UPDATE, or DELETE happens on a table.
+
+# 1) Window Functions
+
+Window functions perform calculations **across rows but do not group or collapse rows** like GROUP BY does.
+
+Syntax:
+function() OVER (PARTITION BY ... ORDER BY ...)
+
+Common Window Functions:
+- ROW_NUMBER()
+- RANK()
+- DENSE_RANK()
+- SUM() / AVG() / COUNT() used as window functions
+
+Trigger = Auto runs when data changes.
+Job = Auto runs on schedule (time-based).
